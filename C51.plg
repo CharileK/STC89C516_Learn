@@ -1,0 +1,14 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+E:\Data\Study\C51\STC89C516_Learn\C51.uvproj
+Project File Date:  03/03/2021
+
+<h2>Output:</h2>
+Build target 'Target 1'
+linking...
+Program Size: data=9.0 xdata=0 code=46
+creating hex file from "C51"...
+"C51" - 0 Error(s), 0 Warning(s).
