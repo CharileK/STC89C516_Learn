@@ -1,3 +1,4 @@
-"main.obj" 
+"main.obj",
+"ds1302.obj" 
 TO "C51" 
 RAMSIZE(256) 

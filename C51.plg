@@ -7,8 +7,13 @@ E:\Data\Study\C51\STC89C516_Learn\C51.uvproj
 Project File Date:  03/03/2021
 
 <h2>Output:</h2>
+compiling main.c...
+main.c - 0 Error(s), 0 Warning(s).
 Build target 'Target 1'
+compiling ds1302.c...
 linking...
-Program Size: data=9.0 xdata=0 code=46
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DS1302INIT?DS1302
+Program Size: data=25.0 xdata=0 code=550
 creating hex file from "C51"...
-"C51" - 0 Error(s), 0 Warning(s).
+"C51" - 0 Error(s), 1 Warning(s).
