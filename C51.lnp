@@ -1,4 +1,4 @@
 "main.obj",
-"ds1302.obj" 
+"PGA411.obj" 
 TO "C51" 
 RAMSIZE(256) 

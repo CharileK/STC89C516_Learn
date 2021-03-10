@@ -22,11 +22,11 @@
 */
 
 #include "reg52.h"			 //此文件中定义了单片机的一些特殊功能寄存器
-#include "ds1302.h"	
+//#include "ds1302.h"	
 #include "PGA411.h"
 
-typedef unsigned int u16;	  //对数据类型进行声明定义
-typedef unsigned char u8;
+// typedef unsigned int u16;	  //对数据类型进行声明定义
+// typedef unsigned char u8;
 
 sbit LSA=P2^2;
 sbit LSB=P2^3;
@@ -34,17 +34,17 @@ sbit LSC=P2^4;
 
 
 char num=0;
-u8 DisplayData[8];
-u8 code smgduan[10]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
+uint8_t DisplayData[8];
+uint8_t code smgduan[10]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
 
 /*******************************************************************************
 * 函 数 名         : delay
 * 函数功能		   : 延时函数，i=1时，大约延时10us
 *******************************************************************************/
-void delay(u16 i)
-{
-	while(i--);	
-}
+// void delay(uint16_t i)
+// {
+// 	while(i--);	
+// }
 
 
 /*******************************************************************************
@@ -67,14 +67,14 @@ void datapros()
 	// DisplayData[7] = smgduan[TIME[0]&0x0f];
 
 	Velocity=Get_Velocity();
-	if(Velocity&0x800=1)
+	if(Velocity&0x800)
 	{DisplayData[0] = 0x40;}
 	else
-	{DisplayData[0] =smgduan[0]};
+	{DisplayData[0] =smgduan[0];}
 	DisplayData[1] = smgduan[Velocity/1000];          //千位
 	DisplayData[2] = smgduan[Velocity%1000/100];      //百位
 	DisplayData[3] = smgduan[Velocity%100/10];        //十位
-	DisplayData[3] = smgduan[Velocity%10];            //个位
+	DisplayData[4] = smgduan[Velocity%10];            //个位
 
 }
 
@@ -87,7 +87,7 @@ void datapros()
 *******************************************************************************/
 void DigDisplay()
 {
-	u8 i;
+	uint8_t i;
 	for(i=0;i<8;i++)
 	{
 		switch(i)	 //位选，选择点亮的数码管，
@@ -110,7 +110,7 @@ void DigDisplay()
 				LSA=1;LSB=1;LSC=1; break;//显示第7位	
 		}
 		P0=DisplayData[i];//发送数据
-		delay(100); //间隔一段时间扫描	
+		Delay(100); //间隔一段时间扫描	
 		P0=0x00;//消隐
 	}		
 }

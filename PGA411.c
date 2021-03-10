@@ -1,5 +1,7 @@
 #include"PGA411.h"
 
+int16_t Velocity;
+
 void PGA411_INIT(void)
 {
   SCLK_L;
@@ -75,7 +77,8 @@ uint16_t PGA411_ReadReg(uint8_t addr)
 {
   uint16_t dat;
   uint32_t dat_temp;
-  uint8_t s；
+  uint8_t s;
+  
   PGA411_WriteReg(addr,0x000F);
   CS_L;
   _nop_();

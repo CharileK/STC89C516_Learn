@@ -1,8 +1,8 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        03/09/2021  20:49:06  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        03/10/2021  22:03:43  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
-E:\TOOLS_DEV\KEIL\C51\BIN\BL51.EXE main.obj, ds1302.obj TO C51 RAMSIZE (256)
+E:\TOOLS_DEV\KEIL\C51\BIN\BL51.EXE main.obj, PGA411.obj TO C51 RAMSIZE (256)
 
 
 MEMORY MODEL: SMALL
@@ -10,9 +10,13 @@ MEMORY MODEL: SMALL
 
 INPUT MODULES INCLUDED:
   main.obj (MAIN)
-  ds1302.obj (DS1302)
+  PGA411.obj (PGA411)
   E:\TOOLS_DEV\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  E:\TOOLS_DEV\KEIL\C51\LIB\C51S.LIB (?C?SIDIV)
+  E:\TOOLS_DEV\KEIL\C51\LIB\C51S.LIB (?C?ULSHR)
+  E:\TOOLS_DEV\KEIL\C51\LIB\C51S.LIB (?C?LSHL)
   E:\TOOLS_DEV\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+  E:\TOOLS_DEV\KEIL\C51\LIB\C51S.LIB (?C?UIDIV)
 
 
 LINK MAP OF MODULE:  C51 (MAIN)
@@ -23,54 +27,100 @@ LINK MAP OF MODULE:  C51 (MAIN)
 
             * * * * * * *   D A T A   M E M O R Y   * * * * * * *
             REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
-            DATA    0008H     0009H     UNIT         ?DT?MAIN
-            DATA    0011H     0007H     UNIT         ?DT?DS1302
-            IDATA   0018H     0001H     UNIT         ?STACK
+            DATA    0008H     0010H     UNIT         _DATA_GROUP_
+            DATA    0018H     0009H     UNIT         ?DT?MAIN
+            DATA    0021H     0002H     UNIT         ?DT?PGA411
+            DATA    0023H     0001H     UNIT         ?DT?PAR_GET_ANGLE?PGA411
+            IDATA   0024H     0001H     UNIT         ?STACK
 
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
             CODE    0000H     0003H     ABSOLUTE     
-            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
-            CODE    008FH     006DH     UNIT         ?PR?DIGDISPLAY?MAIN
-            CODE    00FCH     004AH     UNIT         ?PR?_DS1302READ?DS1302
-            CODE    0146H     003AH     UNIT         ?PR?DATAPROS?MAIN
-            CODE    0180H     0035H     UNIT         ?PR?_DS1302WRITE?DS1302
-            CODE    01B5H     0023H     UNIT         ?PR?DS1302INIT?DS1302
-            CODE    01D8H     0016H     UNIT         ?PR?DS1302READTIME?DS1302
-            CODE    01EEH     000EH     UNIT         ?CO?DS1302
-            CODE    01FCH     000DH     UNIT         ?C_INITSEG
-            CODE    0209H     000BH     UNIT         ?PR?_DELAY?MAIN
-            CODE    0214H     000AH     UNIT         ?CO?MAIN
-            CODE    021EH     0008H     UNIT         ?PR?MAIN?MAIN
+            CODE    0003H     00F4H     UNIT         ?PR?REG_READ_ALL?PGA411
+            CODE    00F7H     00B1H     UNIT         ?C?LIB_CODE
+            CODE    01A8H     009AH     UNIT         ?PR?_PGA411_WRITEREG?PGA411
+            CODE    0242H     0098H     UNIT         ?PR?PGA411_INIT?PGA411
+            CODE    02DAH     0097H     UNIT         ?PR?DATAPROS?MAIN
+            CODE    0371H     008CH     UNIT         ?C_C51STARTUP
+            CODE    03FDH     0078H     UNIT         ?PR?_PGA411_CRC2?PGA411
+            CODE    0475H     0073H     UNIT         ?PR?DIGDISPLAY?MAIN
+            CODE    04E8H     0064H     UNIT         ?PR?_PGA411_READREG?PGA411
+            CODE    054CH     003EH     UNIT         ?PR?PAR_GET_ANGLE?PGA411
+            CODE    058AH     0030H     UNIT         ?PR?_PGA411_STATE?PGA411
+            CODE    05BAH     001DH     UNIT         ?PR?GET_VELOCITY?PGA411
+            CODE    05D7H     0018H     UNIT         ?PR?PGA411_DEVICEUNLOCK?PGA411
+            CODE    05EFH     0012H     UNIT         ?PR?PGA411_RESET?PGA411
+            CODE    0601H     000CH     UNIT         ?PR?PGA411_FAULTRESET?PGA411
+            CODE    060DH     000BH     UNIT         ?PR?MAIN?MAIN
+            CODE    0618H     000BH     UNIT         ?PR?_DELAY?PGA411
+            CODE    0623H     000AH     UNIT         ?CO?MAIN
+            CODE    062DH     0004H     UNIT         ?C_INITSEG
 
 
 
 OVERLAY MAP OF MODULE:   C51 (MAIN)
 
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 2
 
-SEGMENT
-  +--> CALLED SEGMENT
----------------------
-?C_C51STARTUP
+
+
+SEGMENT                                  DATA_GROUP 
+  +--> CALLED SEGMENT                  START    LENGTH
+------------------------------------------------------
+?C_C51STARTUP                          -----    -----
   +--> ?PR?MAIN?MAIN
   +--> ?C_INITSEG
 
-?PR?MAIN?MAIN
+?PR?MAIN?MAIN                          -----    -----
+  +--> ?PR?PGA411_INIT?PGA411
   +--> ?PR?DATAPROS?MAIN
   +--> ?PR?DIGDISPLAY?MAIN
 
-?PR?DATAPROS?MAIN
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/09/2021  20:49:06  PAGE 2
+?PR?PGA411_INIT?PGA411                 -----    -----
+  +--> ?PR?PGA411_RESET?PGA411
+  +--> ?PR?_PGA411_STATE?PGA411
+  +--> ?PR?PGA411_DEVICEUNLOCK?PGA411
+  +--> ?PR?_PGA411_WRITEREG?PGA411
+  +--> ?PR?PGA411_FAULTRESET?PGA411
+  +--> ?PR?_DELAY?PGA411
 
+?PR?PGA411_RESET?PGA411                -----    -----
+  +--> ?PR?_DELAY?PGA411
 
-  +--> ?PR?DS1302READTIME?DS1302
+?PR?_PGA411_STATE?PGA411               0008H    0002H
+  +--> ?PR?_PGA411_READREG?PGA411
+  +--> ?PR?_PGA411_WRITEREG?PGA411
+
+?PR?_PGA411_READREG?PGA411             000AH    0004H
+  +--> ?PR?_PGA411_WRITEREG?PGA411
+
+?PR?_PGA411_WRITEREG?PGA411            000EH    0004H
+  +--> ?PR?_PGA411_CRC2?PGA411
+
+?PR?_PGA411_CRC2?PGA411                0012H    0006H
+
+?PR?PGA411_DEVICEUNLOCK?PGA411         -----    -----
+  +--> ?PR?_PGA411_WRITEREG?PGA411
+
+?PR?PGA411_FAULTRESET?PGA411           -----    -----
+  +--> ?PR?_DELAY?PGA411
+
+?PR?DATAPROS?MAIN                      -----    -----
+  +--> ?PR?GET_VELOCITY?PGA411
   +--> ?CO?MAIN
 
-?PR?DS1302READTIME?DS1302
-  +--> ?CO?DS1302
-  +--> ?PR?_DS1302READ?DS1302
+?PR?GET_VELOCITY?PGA411                -----    -----
+  +--> ?PR?_PGA411_READREG?PGA411
 
-?PR?DIGDISPLAY?MAIN
-  +--> ?PR?_DELAY?MAIN
+?PR?DIGDISPLAY?MAIN                    0008H    0001H
+  +--> ?PR?_DELAY?PGA411
+
+
+
+UNRESOLVED EXTERNAL SYMBOLS:
+   ALL_REG
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 3
+
 
 
 
@@ -86,228 +136,676 @@ SYMBOL TABLE OF MODULE:  C51 (MAIN)
   D:00A0H         PUBLIC        P2
   D:00B0H         PUBLIC        P3
   D:00A8H         PUBLIC        IE
-  C:0209H         PUBLIC        _delay
   D:00B8H         PUBLIC        IP
-  C:021EH         PUBLIC        main
+  C:060DH         PUBLIC        main
   D:0098H         PUBLIC        SCON
   D:0088H         PUBLIC        TCON
-  D:0008H         PUBLIC        num
-  D:0009H         PUBLIC        DisplayData
+  D:0018H         PUBLIC        num
+  D:0019H         PUBLIC        DisplayData
   B:00A0H.2       PUBLIC        LSA
   B:00A0H.3       PUBLIC        LSB
   B:00A0H.4       PUBLIC        LSC
-  C:0146H         PUBLIC        datapros
+  C:02DAH         PUBLIC        datapros
   D:00C8H         PUBLIC        T2CON
-  C:008FH         PUBLIC        DigDisplay
-  C:0214H         PUBLIC        smgduan
+  C:0475H         PUBLIC        DigDisplay
+  C:0623H         PUBLIC        smgduan
   D:00D0H         PUBLIC        PSW
-  -------         PROC          _DELAY
-  D:0006H         SYMBOL        i
-  C:0209H         LINE#         43
-  C:0209H         LINE#         44
-  C:0209H         LINE#         45
-  C:0213H         LINE#         46
-  -------         ENDPROC       _DELAY
   -------         PROC          DATAPROS
-  C:0146H         LINE#         56
-  C:0146H         LINE#         57
-  C:0146H         LINE#         58
-  C:0149H         LINE#         59
-  C:0154H         LINE#         60
-  C:015BH         LINE#         61
-  C:015EH         LINE#         62
-  C:0166H         LINE#         63
-  C:016DH         LINE#         64
-  C:0170H         LINE#         65
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/09/2021  20:49:06  PAGE 3
-
-
-  C:0178H         LINE#         66
-  C:017FH         LINE#         67
+  C:02DAH         LINE#         57
+  C:02DAH         LINE#         58
+  C:02DAH         LINE#         69
+  C:02E1H         LINE#         70
+  C:02E6H         LINE#         71
+  C:02EBH         LINE#         73
+  C:02F2H         LINE#         74
+  C:030BH         LINE#         75
+  C:0331H         LINE#         76
+  C:0357H         LINE#         77
+  C:0370H         LINE#         79
   -------         ENDPROC       DATAPROS
   -------         PROC          DIGDISPLAY
   -------         DO            
-  D:0005H         SYMBOL        i
+  D:0008H         SYMBOL        i
   -------         ENDDO         
-  C:008FH         LINE#         76
-  C:008FH         LINE#         77
-  C:008FH         LINE#         79
-  C:0091H         LINE#         80
-  C:0091H         LINE#         81
-  C:00B6H         LINE#         82
-  C:00B6H         LINE#         83
-  C:00B6H         LINE#         84
-  C:00BAH         LINE#         85
-  C:00BAH         LINE#         86
-  C:00C2H         LINE#         87
-  C:00C2H         LINE#         88
-  C:00C6H         LINE#         89
-  C:00C6H         LINE#         90
-  C:00CEH         LINE#         91
-  C:00CEH         LINE#         92
-  C:00D2H         LINE#         93
-  C:00D2H         LINE#         94
-  C:00DAH         LINE#         95
-  C:00DAH         LINE#         96
-  C:00DEH         LINE#         97
-  C:00DEH         LINE#         98
-  C:00E4H         LINE#         99
-  C:00E4H         LINE#         100
-  C:00EBH         LINE#         101
-  C:00F2H         LINE#         102
-  C:00F5H         LINE#         103
-  C:00FBH         LINE#         104
+  C:0475H         LINE#         88
+  C:0475H         LINE#         89
+  C:0475H         LINE#         91
+  C:0478H         LINE#         92
+  C:0478H         LINE#         93
+  C:049EH         LINE#         94
+  C:049EH         LINE#         95
+  C:049EH         LINE#         96
+  C:04A2H         LINE#         97
+  C:04A2H         LINE#         98
+  C:04AAH         LINE#         99
+  C:04AAH         LINE#         100
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 4
+
+
+  C:04AEH         LINE#         101
+  C:04AEH         LINE#         102
+  C:04B6H         LINE#         103
+  C:04B6H         LINE#         104
+  C:04BAH         LINE#         105
+  C:04BAH         LINE#         106
+  C:04C2H         LINE#         107
+  C:04C2H         LINE#         108
+  C:04C6H         LINE#         109
+  C:04C6H         LINE#         110
+  C:04CCH         LINE#         111
+  C:04CCH         LINE#         112
+  C:04D4H         LINE#         113
+  C:04DBH         LINE#         114
+  C:04DEH         LINE#         115
+  C:04E7H         LINE#         116
   -------         ENDPROC       DIGDISPLAY
   -------         PROC          MAIN
-  C:021EH         LINE#         112
-  C:021EH         LINE#         113
-  C:021EH         LINE#         115
-  C:021EH         LINE#         116
-  C:021EH         LINE#         117
-  C:0221H         LINE#         118
-  C:0224H         LINE#         119
+  C:060DH         LINE#         124
+  C:060DH         LINE#         125
+  C:060DH         LINE#         128
+  C:0610H         LINE#         130
+  C:0610H         LINE#         131
+  C:0610H         LINE#         132
+  C:0613H         LINE#         133
+  C:0616H         LINE#         134
   -------         ENDPROC       MAIN
   -------         ENDMOD        MAIN
 
-  -------         MODULE        DS1302
+  -------         MODULE        PGA411
   C:0000H         SYMBOL        _ICE_DUMMY_
+  C:01ACH         PUBLIC        _PGA411_WriteReg
   D:0090H         PUBLIC        P1
   D:00B0H         PUBLIC        P3
-  C:0180H         PUBLIC        _Ds1302Write
+  B:0090H.1       PUBLIC        RESET
+  C:0242H         PUBLIC        PGA411_INIT
   D:00A8H         PUBLIC        IE
-  C:01D8H         PUBLIC        Ds1302ReadTime
-  C:01B5H         PUBLIC        Ds1302Init
+  C:05D7H         PUBLIC        PGA411_DeviceUnlock
+  B:0090H.3       PUBLIC        CS
+  C:0003H         PUBLIC        REG_READ_ALL
   D:00B8H         PUBLIC        IP
-  B:00B0H.6       PUBLIC        SCLK
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/09/2021  20:49:06  PAGE 4
-
-
-  D:0011H         PUBLIC        TIME
-  B:00B0H.4       PUBLIC        DSIO
+  B:0090H.0       PUBLIC        INHB
+  B:0090H.4       PUBLIC        SCLK
   D:0098H         PUBLIC        SCON
   D:0088H         PUBLIC        TCON
-  C:01F5H         PUBLIC        WRITE_RTC_ADDR
-  C:01EEH         PUBLIC        READ_RTC_ADDR
+  C:03FDH         PUBLIC        _PGA411_crc2
+  C:058AH         PUBLIC        _PGA411_State
+  D:0021H         PUBLIC        Velocity
+  C:05EFH         PUBLIC        PGA411_RESET
+  C:05BAH         PUBLIC        Get_Velocity
+  C:0601H         PUBLIC        PGA411_FaultReset
+  B:0090H.5       PUBLIC        SDI
+  B:0090H.6       PUBLIC        SDO
   D:00C8H         PUBLIC        T2CON
-  B:00B0H.5       PUBLIC        RST
+  B:0090H.2       PUBLIC        FAULTRES
+  C:04E8H         PUBLIC        _PGA411_ReadReg
+  C:054CH         PUBLIC        Par_Get_Angle
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 5
+
+
+  C:0618H         PUBLIC        _Delay
   D:00D0H         PUBLIC        PSW
-  C:00FCH         PUBLIC        _Ds1302Read
-  -------         PROC          _DS1302WRITE
-  D:0007H         SYMBOL        addr
-  D:0005H         SYMBOL        dat
+  -------         PROC          PGA411_INIT
+  C:0242H         LINE#         5
+  C:0242H         LINE#         6
+  C:0242H         LINE#         7
+  C:0244H         LINE#         8
+  C:0245H         LINE#         9
+  C:0247H         LINE#         10
+  C:0248H         LINE#         11
+  C:024BH         LINE#         12
+  C:0252H         LINE#         13
+  C:0255H         LINE#         14
+  C:025EH         LINE#         15
+  C:0267H         LINE#         16
+  C:0270H         LINE#         17
+  C:0279H         LINE#         18
+  C:0282H         LINE#         19
+  C:028BH         LINE#         20
+  C:0294H         LINE#         21
+  C:029DH         LINE#         22
+  C:02A6H         LINE#         23
+  C:02AFH         LINE#         24
+  C:02B7H         LINE#         25
+  C:02BFH         LINE#         26
+  C:02C8H         LINE#         27
+  C:02CEH         LINE#         29
+  C:02D1H         LINE#         30
+  C:02D3H         LINE#         31
+  -------         ENDPROC       PGA411_INIT
+  -------         PROC          PGA411_RESET
+  C:05EFH         LINE#         34
+  C:05EFH         LINE#         35
+  C:05EFH         LINE#         36
+  C:05F1H         LINE#         37
+  C:05F8H         LINE#         38
+  C:05FAH         LINE#         39
+  -------         ENDPROC       PGA411_RESET
+  -------         PROC          _PGA411_STATE
+  D:0006H         SYMBOL        state
   -------         DO            
-  D:0006H         SYMBOL        n
+  D:0008H         SYMBOL        temp
   -------         ENDDO         
-  C:0180H         LINE#         19
-  C:0180H         LINE#         20
-  C:0180H         LINE#         22
-  C:0182H         LINE#         23
-  C:0183H         LINE#         25
-  C:0185H         LINE#         26
-  C:0186H         LINE#         27
-  C:0188H         LINE#         28
-  C:0189H         LINE#         30
-  C:018BH         LINE#         31
-  C:018BH         LINE#         32
-  C:018FH         LINE#         33
-  C:0193H         LINE#         34
-  C:0195H         LINE#         35
-  C:0196H         LINE#         36
-  C:0198H         LINE#         37
-  C:0199H         LINE#         38
-  C:019DH         LINE#         39
-  C:019FH         LINE#         40
-  C:019FH         LINE#         41
-  C:01A3H         LINE#         42
-  C:01A7H         LINE#         43
-  C:01A9H         LINE#         44
-  C:01AAH         LINE#         45
-  C:01ACH         LINE#         46
-  C:01ADH         LINE#         47
-  C:01B1H         LINE#         49
-  C:01B3H         LINE#         50
-  C:01B4H         LINE#         51
-  -------         ENDPROC       _DS1302WRITE
-  -------         PROC          _DS1302READ
+  C:058AH         LINE#         42
+  C:058AH         LINE#         43
+  C:058AH         LINE#         45
+  C:0590H         LINE#         46
+  C:0590H         LINE#         48
+  C:0599H         LINE#         49
+  C:059CH         LINE#         50
+  C:05A2H         LINE#         51
+  C:05A4H         LINE#         53
+  C:05A4H         LINE#         55
+  C:05ADH         LINE#         56
+  C:05B0H         LINE#         57
+  C:05B9H         LINE#         58
+  C:05B9H         LINE#         59
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 6
+
+
+  -------         ENDPROC       _PGA411_STATE
+  -------         PROC          PGA411_DEVICEUNLOCK
+  C:05D7H         LINE#         61
+  C:05D7H         LINE#         62
+  C:05D7H         LINE#         63
+  C:05DCH         LINE#         64
+  C:05E1H         LINE#         65
+  C:05E6H         LINE#         66
+  -------         ENDPROC       PGA411_DEVICEUNLOCK
+  -------         PROC          PGA411_FAULTRESET
+  C:0601H         LINE#         69
+  C:0601H         LINE#         70
+  C:0601H         LINE#         71
+  C:0603H         LINE#         72
+  C:060AH         LINE#         73
+  C:060CH         LINE#         74
+  -------         ENDPROC       PGA411_FAULTRESET
+  -------         PROC          _PGA411_READREG
   D:0007H         SYMBOL        addr
   -------         DO            
-  D:0005H         SYMBOL        n
   D:0006H         SYMBOL        dat
-  D:0007H         SYMBOL        dat1
+  D:000AH         SYMBOL        dat_temp
+  D:0003H         SYMBOL        s
   -------         ENDDO         
-  C:00FCH         LINE#         60
-  C:00FCH         LINE#         61
-  C:00FCH         LINE#         63
-  C:00FEH         LINE#         64
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/09/2021  20:49:06  PAGE 5
-
-
-  C:00FFH         LINE#         66
-  C:0101H         LINE#         67
-  C:0102H         LINE#         68
-  C:0104H         LINE#         69
-  C:0105H         LINE#         71
-  C:0107H         LINE#         72
-  C:0107H         LINE#         73
-  C:010BH         LINE#         74
-  C:010FH         LINE#         75
-  C:0111H         LINE#         76
-  C:0112H         LINE#         77
-  C:0114H         LINE#         78
-  C:0115H         LINE#         79
-  C:0119H         LINE#         80
-  C:011AH         LINE#         81
-  C:011CH         LINE#         82
-  C:011CH         LINE#         83
-  C:0121H         LINE#         84
-  C:012DH         LINE#         85
-  C:012FH         LINE#         86
-  C:0130H         LINE#         87
-  C:0132H         LINE#         88
-  C:0133H         LINE#         89
-  C:0137H         LINE#         91
-  C:0139H         LINE#         92
-  C:013AH         LINE#         93
-  C:013CH         LINE#         94
-  C:013DH         LINE#         95
-  C:013FH         LINE#         96
-  C:0140H         LINE#         97
-  C:0142H         LINE#         98
-  C:0143H         LINE#         99
-  C:0145H         LINE#         100
-  -------         ENDPROC       _DS1302READ
-  -------         PROC          DS1302INIT
+  C:04E8H         LINE#         76
+  C:04E8H         LINE#         77
+  C:04E8H         LINE#         82
+  C:04EFH         LINE#         83
+  C:04F1H         LINE#         84
+  C:04F2H         LINE#         85
+  C:04FBH         LINE#         86
+  C:04FCH         LINE#         87
+  C:04FCH         LINE#         88
+  C:0511H         LINE#         89
+  C:0513H         LINE#         90
+  C:0514H         LINE#         91
+  C:052CH         LINE#         92
+  C:052EH         LINE#         93
+  C:052FH         LINE#         94
+  C:0533H         LINE#         95
+  C:0535H         LINE#         96
+  C:0536H         LINE#         98
+  C:054BH         LINE#         99
+  C:054BH         LINE#         100
+  C:054BH         LINE#         101
+  -------         ENDPROC       _PGA411_READREG
+  C:01A8H         SYMBOL        L?0048
+  -------         PROC          L?0047
+  -------         ENDPROC       L?0047
+  C:01A8H         SYMBOL        L?0048
+  -------         PROC          _PGA411_WRITEREG
+  D:0007H         SYMBOL        addr
+  D:0002H         SYMBOL        dat
   -------         DO            
-  D:0004H         SYMBOL        n
+  D:000EH         SYMBOL        dat_temp
+  D:0006H         SYMBOL        crc6_calc
+  D:0003H         SYMBOL        s
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 7
+
+
   -------         ENDDO         
-  C:01B5H         LINE#         109
-  C:01B5H         LINE#         110
-  C:01B5H         LINE#         112
-  C:01BCH         LINE#         113
-  C:01BEH         LINE#         114
-  C:01BEH         LINE#         115
-  C:01CDH         LINE#         116
-  C:01D1H         LINE#         117
-  -------         ENDPROC       DS1302INIT
-  -------         PROC          DS1302READTIME
+  C:01ACH         LINE#         103
+  C:01B0H         LINE#         104
+  C:01B0H         LINE#         110
+  C:01B9H         LINE#         111
+  C:01CCH         LINE#         112
+  C:01E0H         LINE#         113
+  C:01F4H         LINE#         114
+  C:01F7H         LINE#         115
+  C:020EH         LINE#         116
+  C:0210H         LINE#         117
+  C:0211H         LINE#         118
+  C:0213H         LINE#         119
+  C:0213H         LINE#         120
+  C:021DH         LINE#         121
+  C:021FH         LINE#         122
+  C:0234H         LINE#         123
+  C:0236H         LINE#         124
+  C:0237H         LINE#         125
+  C:0239H         LINE#         126
+  C:023AH         LINE#         127
+  C:023EH         LINE#         128
+  C:0240H         LINE#         129
+  C:0241H         LINE#         130
+  -------         ENDPROC       _PGA411_WRITEREG
+  -------         PROC          _PGA411_CRC2
+  D:0012H         SYMBOL        datin
   -------         DO            
-  D:0003H         SYMBOL        n
+  D:0002H         SYMBOL        byte_idx
+  D:0004H         SYMBOL        bit_idx
+  D:0016H         SYMBOL        crc
   -------         ENDDO         
-  C:01D8H         LINE#         127
-  C:01D8H         LINE#         128
-  C:01D8H         LINE#         130
-  C:01DAH         LINE#         131
-  C:01DAH         LINE#         132
-  C:01E9H         LINE#         133
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/09/2021  20:49:06  PAGE 6
+  C:03FDH         LINE#         132
+  C:0405H         LINE#         133
+  C:0405H         LINE#         134
+  C:040BH         LINE#         135
+  C:040FH         LINE#         136
+  C:040FH         LINE#         137
+  C:042CH         LINE#         138
+  C:042EH         LINE#         139
+  C:042EH         LINE#         140
+  C:044EH         LINE#         141
+  C:0459H         LINE#         142
+  C:0462H         LINE#         143
+  C:0474H         LINE#         144
+  -------         ENDPROC       _PGA411_CRC2
+  -------         PROC          REG_READ_ALL
+  C:0003H         LINE#         146
+  C:0003H         LINE#         147
+  C:0003H         LINE#         148
+  C:000CH         LINE#         149
+  C:0015H         LINE#         150
+  C:001EH         LINE#         151
+  C:0027H         LINE#         152
+  C:0030H         LINE#         153
+  C:0039H         LINE#         154
+  C:0042H         LINE#         155
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 8
 
 
-  C:01EDH         LINE#         135
-  -------         ENDPROC       DS1302READTIME
-  -------         ENDMOD        DS1302
+  C:004BH         LINE#         156
+  C:0054H         LINE#         157
+  C:005DH         LINE#         158
+  C:0066H         LINE#         159
+  C:006FH         LINE#         160
+  C:0078H         LINE#         161
+  C:0081H         LINE#         162
+  C:008AH         LINE#         163
+  C:0093H         LINE#         164
+  C:009CH         LINE#         165
+  C:00A5H         LINE#         166
+  C:00AEH         LINE#         167
+  C:00B7H         LINE#         168
+  C:00C0H         LINE#         169
+  C:00C9H         LINE#         170
+  C:00D2H         LINE#         171
+  C:00DBH         LINE#         172
+  C:00E4H         LINE#         173
+  C:00EDH         LINE#         174
+  C:00F6H         LINE#         175
+  -------         ENDPROC       REG_READ_ALL
+  -------         PROC          GET_VELOCITY
+  -------         DO            
+  D:0006H         SYMBOL        Velocity
+  -------         ENDDO         
+  C:05BAH         LINE#         177
+  C:05BAH         LINE#         178
+  C:05BAH         LINE#         182
+  C:05C3H         LINE#         183
+  C:05CEH         LINE#         184
+  C:05CEH         LINE#         185
+  C:05D6H         LINE#         186
+  C:05D6H         LINE#         187
+  C:05D6H         LINE#         188
+  -------         ENDPROC       GET_VELOCITY
+  -------         PROC          PAR_GET_ANGLE
+  -------         DO            
+  D:0004H         SYMBOL        data_temp
+  D:0006H         SYMBOL        data_parity
+  D:0001H         SYMBOL        parity
+  D:0023H         SYMBOL        parbit
+  -------         ENDDO         
+  C:054CH         LINE#         190
+  C:054CH         LINE#         191
+  C:054CH         LINE#         197
+  C:054EH         LINE#         198
+  C:0553H         LINE#         199
+  C:0558H         LINE#         200
+  C:055AH         LINE#         201
+  C:055EH         LINE#         202
+  C:055EH         LINE#         203
+  C:056BH         LINE#         204
+  C:0577H         LINE#         205
+  C:0579H         LINE#         206
+  C:057EH         LINE#         207
+  C:057EH         LINE#         208
+  C:0585H         LINE#         209
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 9
+
+
+  C:0585H         LINE#         211
+  C:0585H         LINE#         212
+  C:0589H         LINE#         213
+  C:0589H         LINE#         214
+  -------         ENDPROC       PAR_GET_ANGLE
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        i
+  C:0618H         LINE#         220
+  C:0618H         LINE#         221
+  C:0618H         LINE#         222
+  C:0622H         LINE#         223
+  -------         ENDPROC       _DELAY
+  -------         ENDMOD        PGA411
+
+  -------         MODULE        ?C?SIDIV
+  C:00F7H         PUBLIC        ?C?SIDIV
+  -------         ENDMOD        ?C?SIDIV
+
+  -------         MODULE        ?C?ULSHR
+  C:012DH         PUBLIC        ?C?ULSHR
+  -------         ENDMOD        ?C?ULSHR
+
+  -------         MODULE        ?C?LSHL
+  C:0140H         PUBLIC        ?C?LSHL
+  -------         ENDMOD        ?C?LSHL
+
+  -------         MODULE        ?C?UIDIV
+  C:0153H         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
 
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?DS1302INIT?DS1302
+    SEGMENT: ?PR?REG_READ_ALL?PGA411
 
-Program Size: data=25.0 xdata=0 code=550
-LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?PAR_GET_ANGLE?PGA411
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0009H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 000BH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0012H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 10
+
+
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0014H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 001BH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 001DH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0024H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0026H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 002DH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 002FH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0036H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0038H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 003FH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0041H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0048H
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 11
+
+
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 004AH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0051H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0053H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 005AH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 005CH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0063H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0065H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 006CH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 006EH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0075H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0077H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 12
+
+
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 007EH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0080H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0087H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0089H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0090H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0092H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 0099H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 009BH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00A2H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00A4H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00ABH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 13
+
+
+    ADDRESS: 00ADH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00B4H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00B6H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00BDH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00BFH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00C6H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00C8H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00CFH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00D1H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00D8H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00DAH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00E1H
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2021  22:03:43  PAGE 14
+
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00E3H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00EAH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00ECH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00F3H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ALL_REG
+    MODULE:  PGA411.obj (PGA411)
+    ADDRESS: 00F5H
+
+Program Size: data=37.0 xdata=0 code=1585
+LINK/LOCATE RUN COMPLETE.  57 WARNING(S),  0 ERROR(S)

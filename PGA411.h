@@ -66,6 +66,6 @@ uint16_t PGA411_ReadReg(uint8_t addr);
 void PGA411_WriteReg(uint8_t addr,uint16_t dat);
 uint16_t PGA411_crc2(uint32_t datin);
 void REG_READ_ALL(void);
-int16_t Get_Velocity(void)；
-uint16_t Par_Get_Angle(void)；
+int16_t Get_Velocity(void);
+uint16_t Par_Get_Angle(void);
 void Delay(uint16_t i);

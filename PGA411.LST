@@ -1,0 +1,252 @@
+C51 COMPILER V9.01   PGA411                                                                03/10/2021 22:03:03 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE PGA411
+OBJECT MODULE PLACED IN PGA411.OBJ
+COMPILER INVOKED BY: E:\Tools_Dev\Keil\C51\BIN\C51.EXE PGA411.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include"PGA411.h"
+   2          
+   3          int16_t Velocity;
+   4          
+   5          void PGA411_INIT(void)
+   6          {
+   7   1        SCLK_L;
+   8   1        _nop_();
+   9   1        INHB_H;//数据即时输出（非hold）参照datasheet Page39
+  10   1        _nop_();
+  11   1        PGA411_RESET();
+  12   1        PGA411_State(DIAG);
+  13   1        PGA411_DeviceUnlock();
+  14   1        PGA411_WriteReg(0x87,0x8B40);//DEV_OVUV1
+  15   1        PGA411_WriteReg(0x26,0x00ED);//DEV_OVUV2
+  16   1        PGA411_WriteReg(0x17,0xFCFF);//DEV_OVUV3
+  17   1        PGA411_WriteReg(0x39,0x07F2);//DEV_OVUV4
+  18   1        PGA411_WriteReg(0x75,0x1C00);//DEV_OVUV5
+  19   1        PGA411_WriteReg(0x83,0x038F);//DEV_OVUV6
+  20   1        PGA411_WriteReg(0x42,0x0514);//DEV_TLOOP_CFG
+  21   1        PGA411_WriteReg(0x91,0x0005);//DEV_AFE_CFG
+  22   1        PGA411_WriteReg(0x85,0x1400);//DEV_PHASE_CFG:(0x1400->4-VRMS Mode),(0x1800->7-VRMS Mode)
+  23   1        PGA411_WriteReg(0xEB,0x0002);//DEV_CONFIG1:(0x0001-> OAMP POWER =12V)
+  24   1        PGA411_WriteReg(0x0D,0x0000);//DEV_CONTROL1
+  25   1        PGA411_WriteReg(0x38,0x0000);//DEV_CONTROL2
+  26   1        PGA411_WriteReg(0xAE,0x0003);//DEV_CONTROL3
+  27   1        PGA411_State(NORM);
+  28   1        //REG_READ_ALL();
+  29   1        PGA411_FaultReset();
+  30   1        FAULTRES_L; //Fault 输出不锁定，即使更新状态。
+  31   1        Delay(120);
+  32   1      }
+  33          
+  34          void PGA411_RESET(void)//PGA411硬件复位
+  35          {
+  36   1        RESET_L;;
+  37   1        Delay(1);
+  38   1        RESET_H;
+  39   1        Delay(600);//等待大于5.2毫秒以让PGA411完成启动。
+  40   1      }
+  41          
+  42          void PGA411_State (uint16_t state)
+  43          {
+  44   1        uint16_t temp;
+  45   1        if(state==0x01)/* Enter Diagnostic state */
+  46   1        {
+  47   2          /* read content of DEV_CONTROL3 register */
+  48   2          temp = PGA411_ReadReg(0xDD);//DEV_CONTROL3
+  49   2          temp |= 0x0004; /* set bit SPIDIAG */
+  50   2          PGA411_WriteReg(0xAE, temp); //DEV_CONTROL3
+  51   2        }
+  52   1        else/* Go back to normal state */
+  53   1        {
+  54   2          /* read content of DEV_CONTROL1 register */
+  55   2          temp = PGA411_ReadReg(0x90);//DEV_CONTROL1
+C51 COMPILER V9.01   PGA411                                                                03/10/2021 22:03:03 PAGE 2   
+
+  56   2          temp |= 0x0001; /* set bit DIAGEXIT */
+  57   2          PGA411_WriteReg(0x0D, temp); //DEV_CONTROL1
+  58   2        }
+  59   1      }
+  60          
+  61          void PGA411_DeviceUnlock (void)
+  62          {
+  63   1        PGA411_WriteReg(0x95, 0x000F);//DEV_UNLK_CTRL1
+  64   1        PGA411_WriteReg(0x95, 0x0055);
+  65   1        PGA411_WriteReg(0x95, 0x00AA);
+  66   1        PGA411_WriteReg(0x95, 0x00F0);
+  67   1      }
+  68          
+  69          void PGA411_FaultReset(void)//复位错误
+  70          {
+  71   1        FAULTRES_L; 
+  72   1        Delay(1); 
+  73   1        FAULTRES_H; 
+  74   1      }
+  75          
+  76          uint16_t PGA411_ReadReg(uint8_t addr)
+  77          {
+  78   1        uint16_t dat;
+  79   1        uint32_t dat_temp;
+  80   1        uint8_t s;
+  81   1        
+  82   1        PGA411_WriteReg(addr,0x000F);
+  83   1        CS_L;
+  84   1        _nop_();
+  85   1        dat_temp=0;
+  86   1        for(s=0;s<32;s++)
+  87   1        {
+  88   2          dat_temp<<=1;
+  89   2          SCLK_H;
+  90   2          _nop_();
+  91   2          if(SDO){dat_temp+=1;}
+  92   2          SCLK_L;
+  93   2          _nop_();
+  94   2        } 
+  95   1        CS_H;
+  96   1        _nop_();
+  97   1      
+  98   1        dat_temp>>=8;
+  99   1        dat=dat_temp&0xffff;
+ 100   1        return dat;
+ 101   1      }
+ 102          
+ 103          void PGA411_WriteReg(uint8_t addr,uint16_t dat)
+ 104          {
+ 105   1        //PGA411的SPI数据场详见DATASHEET page42（Figure 41）
+ 106   1        uint32_t dat_temp;
+ 107   1        uint16_t crc6_calc;
+ 108   1        uint8_t s;
+ 109   1        
+ 110   1        dat_temp=addr;
+ 111   1        dat_temp<<=16;
+ 112   1        dat_temp|=dat;
+ 113   1        dat_temp<<=8;
+ 114   1        crc6_calc=PGA411_crc2(dat_temp);
+ 115   1        dat_temp+=crc6_calc;//此处data_temp即包含 地址+数据+CRC校验值
+ 116   1        CS_L;
+ 117   1        _nop_();
+C51 COMPILER V9.01   PGA411                                                                03/10/2021 22:03:03 PAGE 3   
+
+ 118   1        for(s=0;s<32;s++)
+ 119   1        {
+ 120   2          if(dat_temp&0x80000000){SDI_H;}
+ 121   2          else{SDI_L;}
+ 122   2          dat_temp<<=1;
+ 123   2          SCLK_H;
+ 124   2           _nop_();
+ 125   2          SCLK_L;//数据在下降沿时，PGA411读取数据
+ 126   2           _nop_();
+ 127   2        }
+ 128   1        CS_H;
+ 129   1        _nop_();
+ 130   1      }
+ 131          
+ 132          uint16_t PGA411_crc2(uint32_t datin)//CRC6 校验函数
+ 133          {
+ 134   1        uint16_t byte_idx,bit_idx,crc =(0x3f<<2);
+ 135   1        for(byte_idx=3;byte_idx>=1;byte_idx--)
+ 136   1        {
+ 137   2          crc^=((datin>>(byte_idx<<3))&0x000000FF);
+ 138   2          for(bit_idx=0;bit_idx<8;bit_idx++)
+ 139   2          {
+ 140   3            crc=crc<<1^(crc&0x80?(0x5b<<2):0);
+ 141   3          }
+ 142   2        }
+ 143   1        return (crc>>2&0x3f);/*restore two bit offset */
+ 144   1      }
+ 145          
+ 146          void REG_READ_ALL(void)
+ 147          {
+ 148   1        ALL_REG[0]=PGA411_ReadReg(0x53);
+ 149   1        ALL_REG[1]=PGA411_ReadReg(0x6B);
+ 150   1        ALL_REG[2]=PGA411_ReadReg(0x65);
+ 151   1        ALL_REG[3]=PGA411_ReadReg(0xEC);
+ 152   1        ALL_REG[4]=PGA411_ReadReg(0x52);
+ 153   1        ALL_REG[5]=PGA411_ReadReg(0xE9);
+ 154   1        ALL_REG[6]=PGA411_ReadReg(0xA6);
+ 155   1        ALL_REG[7]=PGA411_ReadReg(0xC2);
+ 156   1        ALL_REG[8]=PGA411_ReadReg(0x57);
+ 157   1        ALL_REG[9]=PGA411_ReadReg(0xBE);
+ 158   1        ALL_REG[10]=PGA411_ReadReg(0x90);//DEV_CONTROL1
+ 159   1        ALL_REG[11]=PGA411_ReadReg(0x63);
+ 160   1        ALL_REG[12]=PGA411_ReadReg(0xDD);
+ 161   1        ALL_REG[13]=PGA411_ReadReg(0x81);
+ 162   1        ALL_REG[14]=PGA411_ReadReg(0x4D);
+ 163   1        ALL_REG[15]=PGA411_ReadReg(0x84);
+ 164   1        ALL_REG[16]=PGA411_ReadReg(0x1F);
+ 165   1        ALL_REG[17]=PGA411_ReadReg(0x41);
+ 166   1        ALL_REG[18]=PGA411_ReadReg(0x6F);
+ 167   1        ALL_REG[19]=PGA411_ReadReg(0xE1);
+ 168   1        ALL_REG[20]=PGA411_ReadReg(0x4F);
+ 169   1        ALL_REG[21]=PGA411_ReadReg(0x0F);
+ 170   1        ALL_REG[22]=PGA411_ReadReg(0xD9);
+ 171   1        ALL_REG[23]=PGA411_ReadReg(0xE3);
+ 172   1        ALL_REG[24]=PGA411_ReadReg(0x7A);
+ 173   1        ALL_REG[25]=PGA411_ReadReg(0xBA);
+ 174   1        ALL_REG[26]=PGA411_ReadReg(0x64);
+ 175   1      }
+ 176          
+ 177          int16_t Get_Velocity(void)
+ 178          {
+ 179   1        //Get Velocity from SPI
+C51 COMPILER V9.01   PGA411                                                                03/10/2021 22:03:03 PAGE 4   
+
+ 180   1        //速度值在12Bit模式下为11Bit精度，最高位为符号位
+ 181   1        int16_t Velocity;
+ 182   1        Velocity=PGA411_ReadReg(0x6f)&0xfff;//DEV_STAT6=0x6f
+ 183   1        if(Velocity>2048)
+ 184   1        {
+ 185   2          Velocity-=4095;
+ 186   2        }
+ 187   1        return Velocity;
+ 188   1      }
+ 189          
+ 190          uint16_t Par_Get_Angle(void)//并口读取角度值
+ 191          {
+ 192   1        //Hardware connection
+ 193   1        //ORD0 - ORD11-> PA0 - PA11
+ 194   1        //PRD -> PA12  PRD is the parity Bit
+ 195   1        uint16_t data_temp,data_parity;
+ 196   1        uint8_t parity,parbit;
+ 197   1        parity=0;
+ 198   1        data_temp=P3&0x1fff;
+ 199   1        parbit=(data_temp>>12)&0x01;
+ 200   1        data_parity=data_temp&0xfff;
+ 201   1        while(data_parity)
+ 202   1        {
+ 203   2          parity=(!parity)&0x01;
+ 204   2          data_parity=data_parity&(data_parity-1);
+ 205   2        }
+ 206   1        if(parbit==parity)
+ 207   1        {
+ 208   2          return data_temp&0xfff;
+ 209   2        }
+ 210   1        else
+ 211   1        {
+ 212   2          return 0xffff;
+ 213   2        }
+ 214   1      }
+ 215          
+ 216          /*******************************************************************************
+ 217          * 函 数 名         : delay
+ 218          * 函数功能             : 延时函数，i=1时，大约延时10us
+ 219          *******************************************************************************/
+ 220          void Delay(uint16_t i)
+ 221          {
+ 222   1              while(i--);     
+ 223   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    974    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2      17
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
