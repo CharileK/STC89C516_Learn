@@ -50,7 +50,9 @@ sbit SDO=P1^6;
 #define DIAG 0x01
 #define NORM 0x00
 
-uint16_t ALL_REG[27];
+//---加入全局变量--//
+extern uint16_t ALL_REG[27];
+extern int16_t Velocity;
 
 //---定义全局函数---//
 void PGA411_INIT(void);

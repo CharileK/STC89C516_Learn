@@ -23,6 +23,7 @@
 
 #include "reg52.h"			 //此文件中定义了单片机的一些特殊功能寄存器
 #include "ds1302.h"	
+#include "PGA411.h"
 
 typedef unsigned int u16;	  //对数据类型进行声明定义
 typedef unsigned char u8;
@@ -55,15 +56,26 @@ void delay(u16 i)
 
 void datapros() 	 
 {
-   	Ds1302ReadTime();
-	DisplayData[0] = smgduan[TIME[2]/16];				//时
-	DisplayData[1] = smgduan[TIME[2]&0x0f];				 
-	DisplayData[2] = 0x40;
-	DisplayData[3] = smgduan[TIME[1]/16];				//分
-	DisplayData[4] = smgduan[TIME[1]&0x0f];	
-	DisplayData[5] = 0x40;
-	DisplayData[6] = smgduan[TIME[0]/16];				//秒
-	DisplayData[7] = smgduan[TIME[0]&0x0f];
+   	// Ds1302ReadTime();
+	// DisplayData[0] = smgduan[TIME[2]/16];				//时
+	// DisplayData[1] = smgduan[TIME[2]&0x0f];				 
+	// DisplayData[2] = 0x40;
+	// DisplayData[3] = smgduan[TIME[1]/16];				//分
+	// DisplayData[4] = smgduan[TIME[1]&0x0f];	
+	// DisplayData[5] = 0x40;
+	// DisplayData[6] = smgduan[TIME[0]/16];				//秒
+	// DisplayData[7] = smgduan[TIME[0]&0x0f];
+
+	Velocity=Get_Velocity();
+	if(Velocity&0x800=1)
+	{DisplayData[0] = 0x40;}
+	else
+	{DisplayData[0] =smgduan[0]};
+	DisplayData[1] = smgduan[Velocity/1000];          //千位
+	DisplayData[2] = smgduan[Velocity%1000/100];      //百位
+	DisplayData[3] = smgduan[Velocity%100/10];        //十位
+	DisplayData[3] = smgduan[Velocity%10];            //个位
+
 }
 
 
@@ -112,6 +124,9 @@ void DigDisplay()
 void main()
 {	
 	//Ds1302Init();	   //第一次初始化后就可以注释该条语句，这样下次重启就不会再次初始化了
+
+	PGA411_INIT();
+	
 	while(1)
 	{
 		datapros();	 //数据处理函数
