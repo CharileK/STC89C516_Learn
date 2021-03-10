@@ -15,9 +15,9 @@
 #endif
 
 //---定义ds1302使用的IO口---//
-sbit DSIO=P3^4;
-sbit RST=P3^5;
-sbit SCLK=P3^6;
+sbit DSIO=P2^5;
+sbit RST=P2^6;
+sbit SCLK=P2^7;
 
 //---定义全局函数---//
 void Ds1302Write(uchar addr, uchar dat);
