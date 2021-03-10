@@ -3,7 +3,9 @@
 void PGA411_INIT(void)
 {
   SCLK_L;
+  _nop_();
   INHB_H;//数据即时输出（非hold）参照datasheet Page39
+  _nop_();
   PGA411_RESET();
   PGA411_State(DIAG);
   PGA411_DeviceUnlock();
@@ -73,17 +75,22 @@ uint16_t PGA411_ReadReg(uint8_t addr)
 {
   uint16_t dat;
   uint32_t dat_temp;
+  uint8_t s；
   PGA411_WriteReg(addr,0x000F);
   CS_L;
+  _nop_();
   dat_temp=0;
-  for(uint8_t s=0;s<32;s++)
+  for(s=0;s<32;s++)
   {
     dat_temp<<=1;
     SCLK_H;
+    _nop_();
     if(SDO){dat_temp+=1;}
     SCLK_L;
+    _nop_();
   } 
   CS_H;
+  _nop_();
 
   dat_temp>>=8;
   dat=dat_temp&0xffff;
@@ -95,6 +102,7 @@ void PGA411_WriteReg(uint8_t addr,uint16_t dat)
   //PGA411的SPI数据场详见DATASHEET page42（Figure 41）
   uint32_t dat_temp;
   uint16_t crc6_calc;
+  uint8_t s;
   
   dat_temp=addr;
   dat_temp<<=16;
@@ -103,15 +111,19 @@ void PGA411_WriteReg(uint8_t addr,uint16_t dat)
   crc6_calc=PGA411_crc2(dat_temp);
   dat_temp+=crc6_calc;//此处data_temp即包含 地址+数据+CRC校验值
   CS_L;
-  for(uint8_t s=0;s<32;s++)
+  _nop_();
+  for(s=0;s<32;s++)
   {
     if(dat_temp&0x80000000){SDI_H;}
     else{SDI_L;}
     dat_temp<<=1;
     SCLK_H;
-    SCLK_L;
+     _nop_();
+    SCLK_L;//数据在下降沿时，PGA411读取数据
+     _nop_();
   }
   CS_H;
+  _nop_();
 }
 
 uint16_t PGA411_crc2(uint32_t datin)//CRC6 校验函数

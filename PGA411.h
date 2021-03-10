@@ -1,4 +1,6 @@
+//---包含头文件---//
 #include<reg52.h>
+#include<intrins.h>
 
 //---重定义关键词---//
 #ifndef uchar
